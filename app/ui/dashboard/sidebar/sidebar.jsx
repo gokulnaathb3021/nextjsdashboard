@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import MenuLink from "./menulink/menuLink";
 import styles from "./sidebar.module.css";
