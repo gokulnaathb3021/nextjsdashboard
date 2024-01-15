@@ -4,12 +4,20 @@ import { auth } from "@/app/firebase/config";
 import { useRouter } from "next/navigation";
 import styles from "@/app/ui/login/login.module.css";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useContext } from "react";
+import { AuthenticationContext } from "../context/AuthContext";
+import Link from "next/link";
 
 export default function Login() {
+  const { appUser } = useContext(AuthenticationContext);
+  const router = useRouter();
+  if (appUser?.email) {
+    console.log("You're already logged-in");
+    router.push("/");
+  }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [areCredentialsInvalid, setAreCredentialsInvalid] = useState(false);
-  const router = useRouter();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -19,21 +27,21 @@ export default function Login() {
     setPassword(e.target.value);
   };
 
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log(userCredential);
-        sessionStorage.setItem("user", true);
+        // sessionStorage.setItem("user", true);
         setEmail("");
         setPassword("");
         setAreCredentialsInvalid(false);
         router.push("/");
       })
       .catch((error) => {
-        // const errorCode = error.code;
-        // const errorMessage = error.message;
-        // alert(`${errorMessage} - Code is ${errorCode}`);
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(`${errorMessage} - Code is ${errorCode}`);
         setAreCredentialsInvalid(true);
       });
   }
@@ -61,6 +69,9 @@ export default function Login() {
         <button className={styles.button} type="submit">
           Login
         </button>
+        <Link href="/sign-up">
+          <button className={styles.button}>Signup</button>
+        </Link>
         {areCredentialsInvalid && <p>Invalid Credentials!</p>}
       </form>
     </div>

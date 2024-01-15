@@ -14,6 +14,11 @@ import {
   MdHelpCenter,
   MdLogout,
 } from "react-icons/md";
+import { signOut } from "firebase/auth";
+import { auth } from "@/app/firebase/config";
+import { useContext } from "react";
+import { AuthenticationContext } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const menuItems = [
   {
@@ -79,6 +84,11 @@ const menuItems = [
 ];
 
 export default function Sidebar() {
+  const { appUser } = useContext(AuthenticationContext);
+  const router = useRouter();
+  if (!appUser) {
+    router.push("/login");
+  }
   return (
     <div className={styles.container}>
       <div className={styles.user}>
@@ -104,7 +114,12 @@ export default function Sidebar() {
           </li>
         ))}
       </ul>
-      <button className={styles.logout}>
+      <button
+        className={styles.logout}
+        onClick={() => {
+          signOut(auth);
+        }}
+      >
         <MdLogout />
         Logout
       </button>

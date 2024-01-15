@@ -4,8 +4,18 @@ import styles from "@/app/ui/login/login.module.css";
 import { useState } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth } from "@/app/firebase/config";
+import { AuthenticationContext } from "../context/AuthContext";
+import { useContext } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Login() {
+  const router = useRouter();
+  const { appUser } = useContext(AuthenticationContext);
+  if (appUser?.email) {
+    console.log("You're already logged in.");
+    router.push("/");
+  }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [createUserWithEmailAndPassword] =
@@ -24,7 +34,7 @@ export default function Login() {
     try {
       const res = await createUserWithEmailAndPassword(email, password);
       console.log({ res });
-      sessionStorage.setItem("user", true);
+      // sessionStorage.setItem("user", true);
       setEmail("");
       setPassword("");
     } catch (error) {
@@ -57,6 +67,9 @@ export default function Login() {
         <button className={styles.button} type="submit">
           Sign Up
         </button>
+        {/* <Link href="/login">
+          <button className={styles.button}>Login</button>
+        </Link> */}
       </form>
     </div>
   );
